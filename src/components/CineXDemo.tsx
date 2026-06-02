@@ -197,7 +197,7 @@ export default function CineXDemo() {
       "create-campaign",
       [uintCV(BigInt(campaignId || "0")), milestonesToCV(milestones), uintCV(BigInt(goal || "0"))],
       [],
-      PostConditionMode.Allow,
+      "allow",
       () => refreshCampaign(campaignId),
     );
   }
@@ -212,7 +212,7 @@ export default function CineXDemo() {
       "deposit",
       [uintCV(BigInt(depositCampaignId || "0")), uintCV(amount)],
       [pc],
-      PostConditionMode.Deny,
+      "deny",
       () => refreshCampaign(depositCampaignId),
     );
   }
@@ -224,7 +224,7 @@ export default function CineXDemo() {
       "approve-milestone",
       [uintCV(BigInt(approveCampaignId || "0")), uintCV(BigInt(approveIndex || "0"))],
       [],
-      PostConditionMode.Allow,
+      "allow",
       () => refreshCampaign(approveCampaignId),
     );
   }
@@ -236,7 +236,7 @@ export default function CineXDemo() {
       "release-milestone-funds",
       [uintCV(BigInt(releaseCampaignId || "0")), uintCV(BigInt(releaseIndex || "0"))],
       [],
-      PostConditionMode.Allow,
+      "allow",
       () => refreshCampaign(releaseCampaignId),
     );
   }
