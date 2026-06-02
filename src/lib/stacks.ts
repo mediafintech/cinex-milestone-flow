@@ -1,7 +1,5 @@
 import { STACKS_TESTNET } from "@stacks/network";
 import {
-  AnchorMode,
-  PostConditionMode,
   Pc,
   fetchCallReadOnlyFunction,
   cvToJSON,
@@ -9,7 +7,7 @@ import {
   stringAsciiCV,
   listCV,
   tupleCV,
-  ClarityValue,
+  type ClarityValue,
 } from "@stacks/transactions";
 
 export const NETWORK = STACKS_TESTNET;
@@ -49,10 +47,4 @@ export async function readCampaign(campaignId: string, senderAddress: string) {
   }
 }
 
-export {
-  AnchorMode,
-  PostConditionMode,
-  Pc,
-  uintCV,
-  stringAsciiCV,
-};
+export { Pc, uintCV, stringAsciiCV };
