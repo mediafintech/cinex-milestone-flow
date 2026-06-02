@@ -1,29 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
+import CineXDemo from "@/components/CineXDemo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "CineX Demo – Milestone-Based Financing" },
+      {
+        name: "description",
+        content:
+          "Investor-ready demo of CineX milestone-based film financing on the Stacks testnet.",
+      },
+      { property: "og:title", content: "CineX Demo – Milestone-Based Financing" },
+      {
+        property: "og:description",
+        content:
+          "Register creators, fund campaigns, approve milestones and release escrowed STX on Stacks testnet.",
+      },
     ],
   }),
-  component: Index,
+  component: CineXDemo,
 });
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
