@@ -147,9 +147,9 @@ export default function CineXDemo() {
     setTx: (t: StepTx) => void,
     contractName: string,
     functionName: string,
-    functionArgs: unknown[],
-    postConditions: unknown[] = [],
-    postConditionMode: PostConditionMode = PostConditionMode.Deny,
+    functionArgs: ClarityValue[],
+    postConditions: PostCondition[] = [],
+    postConditionMode: PostConditionModeName = "deny",
     onDone?: () => void,
   ) {
     if (!wallet.connected) {
@@ -161,13 +161,12 @@ export default function CineXDemo() {
       const res = await request("stx_callContract", {
         contract: `${CONTRACT_ADDRESS}.${contractName}` as `${string}.${string}`,
         functionName,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        functionArgs: functionArgs as any,
+        functionArgs,
         network: "testnet",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        postConditions: postConditions as any,
+        postConditions,
         postConditionMode,
       });
+
       const txId = (res as { txid?: string }).txid;
       if (txId) {
         setTx({ status: "pending", txId });
