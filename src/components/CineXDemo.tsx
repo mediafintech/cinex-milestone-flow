@@ -4,7 +4,6 @@ import {
   CONTRACT_ADDRESS,
   VERIFICATION_CONTRACT,
   ESCROW_CONTRACT,
-  PostConditionMode,
   Pc,
   uintCV,
   stringAsciiCV,
@@ -14,6 +13,10 @@ import {
   type Milestone,
 } from "@/lib/stacks";
 import { request } from "@stacks/connect";
+import type { ClarityValue, PostCondition } from "@stacks/transactions";
+
+type PostConditionModeName = "allow" | "deny";
+
 
 type TxStatus = "idle" | "broadcasting" | "pending" | "confirmed" | "error";
 
