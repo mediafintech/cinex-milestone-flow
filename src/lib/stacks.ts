@@ -7,6 +7,8 @@ import {
   stringAsciiCV,
   listCV,
   tupleCV,
+  bufferCV,
+  standardPrincipalCV,
   type ClarityValue,
 } from "@stacks/transactions";
 
@@ -47,4 +49,4 @@ export async function readCampaign(campaignId: string, senderAddress: string) {
   }
 }
 
-export { Pc, uintCV, stringAsciiCV };
+export { Pc, uintCV, stringAsciiCV, bufferCV, standardPrincipalCV };

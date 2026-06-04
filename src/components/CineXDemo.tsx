@@ -7,13 +7,15 @@ import {
   Pc,
   uintCV,
   stringAsciiCV,
+  bufferCV,
+  standardPrincipalCV,
   milestonesToCV,
   explorerTxUrl,
   readCampaign,
   type Milestone,
 } from "@/lib/stacks";
-import { request } from "@stacks/connect";
-import type { ClarityValue, PostCondition } from "@stacks/transactions";
+import { request, openContractCall } from "@stacks/connect";
+import type { ClarityValue, PostCondition, principalCV } from "@stacks/transactions";
 
 type PostConditionModeName = "allow" | "deny";
 
@@ -156,6 +158,13 @@ export default function CineXDemo() {
       setTx({ status: "error", error: "Connect your wallet first." });
       return;
     }
+    console.log("callContract called with:", {
+      contractName,
+      functionName,
+      fullContractId: `${CONTRACT_ADDRESS}.${contractName}`,
+      functionArgs,
+      postConditions,
+    });
     setTx({ status: "broadcasting" });
     try {
       const res = await request("stx_callContract", {
@@ -183,24 +192,78 @@ export default function CineXDemo() {
     }
   }
 
-  async function handleRegister() {
-    await callContract(setTx1, VERIFICATION_CONTRACT, "register-creator", [
-      stringAsciiCV(creatorName),
-      stringAsciiCV(vertical),
-    ]);
+async function handleRegister() {
+  alert("Register Creator button clicked!");
+  console.log("handleRegister triggered, wallet.address:", wallet.address);
+  if (!wallet.address) {
+    console.error("No wallet address");
+    alert("Please connect your wallet first.");
+    return;
   }
+  try {
+    await openContractCall({
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: VERIFICATION_CONTRACT,
+      functionName: "register-creator",
+      functionArgs: [
+        standardPrincipalCV(wallet.address),
+        stringAsciiCV(creatorName),
+        stringAsciiCV("https://cinex.africa/creator"),
+        bufferCV(new Uint8Array(32)),
+        stringAsciiCV(vertical),
+        uintCV(1n),
+        uintCV(100000n),
+      ],
+      network: "testnet",
+      onFinish: (data) => {
+        console.log("Transaction successful", data);
+        setTx1({ status: "confirmed", txId: data.txId });
+      },
+      onCancel: () => {
+        console.log("Transaction cancelled");
+        setTx1({ status: "idle" });
+      },
+    });
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    console.error("openContractCall error:", errorMessage);
+    setTx1({ status: "error", error: errorMessage });
+  }
+}
 
   async function handleCreateCampaign() {
-    await callContract(
-      setTx2,
-      ESCROW_CONTRACT,
-      "create-campaign",
-      [uintCV(BigInt(campaignId || "0")), milestonesToCV(milestones), uintCV(BigInt(goal || "0"))],
-      [],
-      "allow",
-      () => refreshCampaign(campaignId),
-    );
+  if (!wallet.address) {
+    alert("Connect wallet first");
+    return;
   }
+  try {
+    await openContractCall({
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: ESCROW_CONTRACT,
+      functionName: "create-campaign",
+      functionArgs: [
+        uintCV(BigInt(campaignId || "0")),
+        standardPrincipalCV(wallet.address), // temporary asset principal
+        uintCV(BigInt(goal || "0")),
+        milestonesToCV(milestones),
+        uintCV(500000n),
+      ],
+      network: "testnet",
+      onFinish: (data) => {
+        console.log("create-campaign success", data);
+        setTx2({ status: "confirmed", txId: data.txId });
+        refreshCampaign(campaignId);
+      },
+      onCancel: () => {
+        setTx2({ status: "idle" });
+      },
+    });
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    console.error(errorMessage);
+    setTx2({ status: "error", error: errorMessage });
+  }
+}
 
   async function handleDeposit() {
     if (!wallet.address) return;
